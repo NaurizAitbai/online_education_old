@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker -H $1:$2 build -t wordpress_php .

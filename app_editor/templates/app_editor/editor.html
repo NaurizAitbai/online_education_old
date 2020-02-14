@@ -1,0 +1,77 @@
+{% extends 'app_base/base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'jstree/dist/themes/default/style.min.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/lib/codemirror.css' %}">
+<link rel="stylesheet" href="{% static 'xterm/css/xterm.css' %}">
+{% endblock %}
+
+{% block title %}{% trans "Интерактивный редактор" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mt-3">
+        <span>{{ request.user }}/{{ project.name }}</span>
+        <button id="runButton" class="btn btn-sm btn-success"><i class="fas fa-play"></i></button>
+        <button id="stopButton" class="btn btn-sm btn-danger" disabled><i class="fas fa-stop"></i></button>
+        <button id="restartButton" class="btn btn-sm btn-secondary" disabled><i class="fas fa-sync"></i></button>
+        <span id="serverAddressLabel"></span>
+    </div>
+    <div class="row mt-3">
+        <div class="col-2">
+            <div>
+                <button id="newFileButton" class="btn btn-sm btn-primary"><i class="fas fa-file"></i></button>
+                <button id="newFolderButton" class="btn btn-sm btn-primary"><i class="fas fa-folder-plus"></i></button>
+            </div>
+            <div id="explorer"></div>
+        </div>
+        <div class="col-5">
+            <ul id="editorTab" class="nav navb-tabs" role="tablist"></ul>
+            <div id="editorPane" class="tab-content"></div>
+            <div class="text-right">
+                <button id="runFileButton" class="btn btn-primary"><i class="fa fa-play"></i> {% trans "Запустить файл" %}</button>
+                <button id="saveFileButton" class="btn btn-primary"><i class="fa fa-save"></i> {% trans "Сохранить файл" %}</button>
+            </div>
+        </div>
+        <div class="col-5">
+            <ul id="viewTab" class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a href="#terminal" class="nav-link active" id="terminal-tab" data-toggle="tab" role="tab" aria-controls="terminal" aria-selected="true">{% trans "Терминал" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#graphic" class="nav-link" id="graphic-tab" data-toggle="tab" role="tab" aria-controls="graphic" aria-selected="false">{% trans "Графика" %}</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="viewTabContent">
+                <div class="tab-pane fade show active" id="terminal" role="tabpanel" aria-labelledby="terminal-tab">
+                    <div id="terminalMessage"></div>
+                    <div id="terminalApp"></div>
+                </div>
+                <div class="tab-pane fade" id="graphic" role="tabpanel" aria-labelledby="graphic-tab">ГРАФИЧЕСКИЙ ВИД</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    const user = {
+        id: {{ request.user.id }}
+    };
+
+    const project = {
+        id: {{ project.id }},
+        name: "{{ project.name }}"
+    };
+</script>
+<script src="{% static 'xterm/lib/xterm.js' %}"></script>
+<script src="{% static 'xterm-addon-attach/lib/xterm-addon-attach.js' %}"></script>
+<script src="{% static 'xterm-addon-fit/lib/xterm-addon-fit.js' %}"></script>
+<script src="{% static 'jstree/dist/jstree.min.js' %}"></script>
+<script src="{% static 'codemirror/lib/codemirror.js' %}"></script>
+<script type="module" src="{% static 'app_editor/editor.js' %}"></script>
+{% endblock %}

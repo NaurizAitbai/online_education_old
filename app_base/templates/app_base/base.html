@@ -1,0 +1,77 @@
+{% load i18n %}
+{% load static %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static '@fortawesome/fontawesome-free/css/all.min.css' %}">
+    {% block css %}{% endblock %}
+    <title>{% block title %}Online Education{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a href="/" class="navbar-brand">Online Education</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                {% url 'index' as index %}
+                {% if index == request.path %}
+                <li class="nav-item active">
+                {% else %}
+                <li class="nav-item">
+                {% endif %}
+                    <a class="nav-link" href="/">{% trans "Главная" %}</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    {% url 'projects:list' as projects_list %}
+                    {% if projects_list in request.path %}
+                <li class="nav-item active">
+                    {% else %}
+                <li class="nav-item">
+                    {% endif %}
+                    <a class="nav-link" href="{{ projects_list }}">{% trans "Мой проекты" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a href="#" id="languageDropdown" class="nav-link active dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {% get_available_languages as LANGUAGES %}
+                        {% for code, name in LANGUAGES %}
+                            {% if code == LANGUAGE_CODE %}
+                            {{ name }}
+                            {% endif %}
+                        {% endfor %}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="languageDropdown">
+                        {% for code, name in LANGUAGES %}
+                        <a class="dropdown-item" href="#">{{ name }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
+            </ul>
+            <div>
+                {% if request.user.is_authenticated %}
+                <span class="ml-3 text-white font-weight-bold">{{ request.user }}</span> <a href="{% url 'logout' %}" class="text-white">({% trans "Выход" %})</a>
+                {% else %}
+                <a href="{% url 'auth' %}" class="btn btn-success ml-3 my-2 my-sm-0">Авторизоваться</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    {% block javascript %}{% endblock %}
+</body>
+</html>

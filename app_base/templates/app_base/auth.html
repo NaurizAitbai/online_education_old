@@ -1,0 +1,23 @@
+{% extends 'app_base/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Вход в систему' %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-5">{% trans 'Вход в систему' %}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">{% trans 'Логин' %}</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="{% trans 'Введите ваш логин' %}">
+        </div>
+        <div class="form-group">
+            <label for="password">{% trans 'Пароль' %}</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="{% trans 'Введите ваш пароль' %}">
+        </div>
+        <button type="submit" class="btn btn-primary">{% trans 'Вход' %}</button>
+    </form>
+</div>
+{% endblock %}

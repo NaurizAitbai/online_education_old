@@ -1,0 +1,54 @@
+{% extends 'app_base/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Создание нового проекта" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-5">{% trans "Создание нового проекта" %}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">{% trans "Название проекта" %}</label>
+            <input type="text" class="form-control" id="name" name="name" aria-describedby="nameHelp" placeholder="{% trans 'Введите название проекта' %}">
+            <small id="nameHelp" class="form-text text-muted">{% trans 'Название проекта необходимо написать на английском' %}</small>
+        </div>
+        <div class="form-group">
+            <label for="description">{% trans "Описание проекта" %}</label>
+            <textarea name="description" id="description" class="form-control" placeholder="{% trans 'Введите описание проекта' %}"></textarea>
+        </div>
+        <div>
+            <h5>{% trans "Тип проекта" %}</h5>
+            <ul class="nav nav-tabs" id="type-tabs" role="tablist">
+                {% for code, name in project_categories.items %}
+                <li class="nav-item">
+                {% if forloop.first %}
+                    <a href="#{{ code }}" id="{{ code }}-tab" class="nav-link active" data-toggle="tab" role="tab" aria-controls="{{ code }}" aria-selected="true">{{ name }}</a>
+                {% else %}
+                    <a href="#{{ code }}" id="{{ code }}-tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="{{ code }}" aria-selected="false">{{ name }}</a>
+                {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content" id="type-content">
+                {% for category, types in project_types.items %}
+                {% if forloop.first %}
+                <div id="{{ category }}" class="tab-pane fade show active" role="tabpanel" aria-labelledby="{{ category }}-tab">
+                {% else %}
+                <div id="{{ category }}" class="tab-pane fade" role="tabpanel" aria-labelledby="{{ category }}-tab">
+                {% endif %}
+                    {% for code, name in types.items %}
+                    <input type="radio" id="{{ code }}" name="type" value="{{ code }}"> <label for="{{ code }}">{{ name }}</label><br>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="text-right">
+            <a href="{% url 'projects:list' %}" class="btn btn-danger">{% trans "Отмена" %}</a>
+            <button type="submit" class="btn btn-primary">{% trans "Создать проект" %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
