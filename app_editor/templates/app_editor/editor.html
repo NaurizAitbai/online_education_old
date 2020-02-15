@@ -67,6 +67,11 @@
         id: {{ project.id }},
         name: "{{ project.name }}"
     };
+
+    const labels = {
+        CREATE_FILE: "{% trans "Создать файл" %}",
+        CREATE_FOLDER: "{% trans "Создать папку" %}",
+    };
 </script>
 <script src="{% static 'xterm/lib/xterm.js' %}"></script>
 <script src="{% static 'xterm-addon-attach/lib/xterm-addon-attach.js' %}"></script>

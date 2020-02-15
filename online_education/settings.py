@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'app_base',
     'app_projects',
     'app_editor',
@@ -50,6 +51,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'online_education.wsgi.application'
+ASGI_APPLICATION = 'online_education.routing.application'
 
 DATABASES = {
     'default': {
