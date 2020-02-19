@@ -55,6 +55,7 @@ $ pipenv --python python3
 $ pipenv shell
 $ pipenv install
 $ pipenv install gunicorn psycopg2
+```
 
 ### Поменять настройки сайта
 Внутри проекта расположение файл `onlie_education/settings.py`. Необходимо рядом с ним создать файл `local_settings.py`, и редактировать этот файл:
