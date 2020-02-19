@@ -9,3 +9,4 @@ pylint = "*"
 [packages]
 django = "*"
 channels = "*"
+docker = "*"

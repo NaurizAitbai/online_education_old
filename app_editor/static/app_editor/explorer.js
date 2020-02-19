@@ -1,4 +1,6 @@
 import { createFile, createFolder } from './actions.js';
+import { FILE, FILE_OPEN } from './consts.js';
+import { editorSocket } from './websocket.js';
 
 
 export const initExplorer = () => {
@@ -45,6 +47,14 @@ export const initExplorer = () => {
         },
         plugins: ["types", "contextmenu", "dnd", "sort", "state", "unique"]
     })
+        .on("selected_node.jstree", (e, data) => {
+            const treeId = data.node.id;
+            const type = data.node.type;
+
+            if (type == FILE) {
+                const filePath = data.node.li_attr["data-path"];
+            }
+        })
 }
 
 /**
@@ -57,3 +67,15 @@ export const explorerUpdate = json_data => {
     $("#explorer").jstree(true).settings.core.data = project_files_tree;
     $("#explorer").jstree(true).refresh();
 };
+
+export const explorerOpenFile(treeId, filePath) {
+    if(filePath in openedFiles) {
+    } else {
+        editorSocket.send(JSON.stringify({
+            type: FILE_OPEN,
+            tree_id: treeId,
+            project: project.id,
+            file: filePath
+        }));
+    }
+}

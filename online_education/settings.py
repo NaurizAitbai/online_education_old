@@ -103,6 +103,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DOCKER_HOST = '127.0.0.1'
 DOCKER_PORT = '2376'
 
+# Когда Docker контейнер создается, ему присваивается URL-адрес имя_проекта.DOCKER_BASE_DOMAIN
+DOCKER_BASE_DOMAIN = 'localhost'
+
 try:
     from .local_settings import *
 except:
