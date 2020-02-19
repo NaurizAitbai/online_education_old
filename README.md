@@ -27,6 +27,7 @@ $ sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-c
 $ sudo add-apt-repository ppa:nginx/stable
 $ sudo apt-get update
 $ sudo apt-get install nginx
+```
 
 ### Создание базы и пользователя в PostgreSQL
 В терминале зайди под юзером `postgres` и в приложение `psql` ввести SQL-запросы.
