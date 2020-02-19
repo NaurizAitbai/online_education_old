@@ -1,6 +1,7 @@
 import { READY, EXPLORER_UPDATE, RUN_SERVER, FILE_OPEN, FILE_CREATE, FOLDER_CREATE } from './consts.js';
 import { explorerUpdate } from './explorer.js';
-import { attachTerminal, openFile, renameNewFile } from './actions.js';
+import { openFile, renameNewFile } from './actions.js';
+import { attachTerminal } from './terminal.js';
 import { serverRunUpdate } from './events.js';
 
 

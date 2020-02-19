@@ -8,5 +8,5 @@ export const FOLDER_CREATE = "FOLDER_CREATE";
 
 export const SUCCESS = "SUCCESS";
 
-export const FOLDER = "FOLDER";
-export const FILE = "FILE";
+export const FOLDER = "folder";
+export const FILE = "file";

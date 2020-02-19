@@ -18,6 +18,25 @@ $ cd online_education
 $ sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
 ```
 
+### Установка Docker
+TODO: В РАЗРАБОТКЕ
+
+### Включить доступ к Docker через TCP
+Создайте папку в `/lib/systemd/system/` под названием `docker.service.d`. Внутри создайте файл `override.conf`.
+
+```sh
+sudo mkdir /lib/systemd/system/docker.service.d
+sudo vim /lib/systemd/system/docker.service.d/override.conf
+```
+
+`/lib/systemd/system/docker.service.d/override.conf`
+
+```
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2376
+```
+
 ### Установка Nginx
 Инструкция по установке `nginx` доступен по следующему адресу: [Install NGINX](https://www.nginx.com/resources/wiki/start/topics/tutorials/install/)
 
@@ -147,6 +166,35 @@ server {
         include proxy_params;
         proxy_pass http://unix:/home/пользователь/online_education/online_education.sock;
     }
+
+    location /ws/ {
+        include proxy_params;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_pass http://unix:/home/пользователь/online_education/online_education.sock;
+    }
+}
+```
+
+Также создать папку `/etc/nginx/apps`, и сделать владельцем данной папки текущего пользователя.
+
+```sh
+sudo mkdir /etc/nginx/apps
+sudo chown -R пользователь:пользователь /etc/nginx/apps
+```
+
+В файле `/etc/nginx/nginx.conf` внутри `http` добавить строку `include apps/*;`
+
+```sh
+sudo vim /etc/nginx/nginx.conf
+```
+
+`/etc/nginx/nginx.conf`
+```
+http {
+    ...
+    include apps/*;
 }
 ```
 
@@ -156,3 +204,5 @@ $ sudo nginx -t
 $ sudo systemctl restart nginx
 ```
 
+### Дать права текущему пользователю сделать перезапуск Nginx сервиса
+TODO: В РАЗРАБОТКЕ

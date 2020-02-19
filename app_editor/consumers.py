@@ -2,7 +2,7 @@ import json
 
 from channels.generic.websocket import WebsocketConsumer
 from .consts import SOCKET_TYPES, STATUS
-from .utils import get_project_files_tree, get_file_content, set_file_content, create_file, create_folder
+from .utils import run_server, get_project_files_tree, get_file_content, set_file_content, create_file, create_folder
 
 
 class EditorConsumer(WebsocketConsumer):
@@ -47,7 +47,7 @@ class EditorConsumer(WebsocketConsumer):
         elif type == SOCKET_TYPES.FILE_OPEN:
             file_path = data['file']
             tree_id = data['tree_id']
-            file_content = get_file_contentproject_id, file_path)
+            file_content = get_file_content(project_id, file_path)
 
             self.send(
                 text_data=json.dumps({

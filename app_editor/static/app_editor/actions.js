@@ -2,6 +2,10 @@ import { SUCCESS, FILE_SAVE, FOLDER, FILE_CREATE, FOLDER_CREATE, RUN_SERVER } fr
 
 import { editorSocket } from './websocket.js';
 
+import { terminal } from './terminal.js';
+
+import { openedFiles, setCurrentFile, getCurrentFile, getRunFileCommand } from './editor.js';
+
 /**
  * Создает новый файл.
  */
@@ -89,17 +93,15 @@ export const runServer = () => {
 };
 
 export const runFile = () => {
+    const runFileCommand = getRunFileCommand();
     if(runFileCommand) {
+        const currentFile = getCurrentFile();
         const parsedRunFile = runFileCommand
             .replace(":FILE_NAME:", currentFile)
             .replace(":FILE_NAME_NO_EXT:", currentFile.split(".")[0]);
-        $("#terminal").paste(parsedRunFile + "\n");
+        terminal.paste(parsedRunFile + "\n");
     }
 };
-
-export const attachTerminal = (json_data) => {
-
-}
 
 /**
  * Создает новую вкладку и редактор, и заполняет этот редактор данными из файла
@@ -113,30 +115,38 @@ export const openFile = (json_data) => {
     if($.isEmptyObject(openedFiles)) {
         $("#editorTab").append(
             `
-            <li class="nav-item"><a id="tab_${treeId} class="nav-link active" data-toggle="tab" href="#pane_${treeId}" role="tab" aria-controls="pane_${treeId}" aria-selected="false">${filePath}</a></li>
+            <li class="nav-item"><a id="tab_${treeId}" class="nav-link active" data-toggle="tab" href="#pane_${treeId}" role="tab" aria-controls="pane_${treeId}" aria-selected="false">${filePath}</a></li>
             `
         );
         $("#editorPane").append(
             `
-            <div id="pane_${treeId} class="tab-pane show active" role="tabpanel" aria-labelledby="tab_${treeId}">
-                <textarea id="editor_${treeId}"></textarea>
+            <div id="pane_${treeId}" class="tab-pane show active" role="tabpanel" aria-labelledby="tab_${treeId}">
+                <textarea id="editor_${treeId}">${fileContent}</textarea>
             </div>
             `
         )
-        currentFile = filePath;
     } else {
         $("#editorTab").append(
             `
-            <li class="nav-item"><a id="tab_${treeId} class="nav-link" data-toggle="tab" href="#pane_${treeId}" role="tab" aria-controls="pane_${treeId}" aria-selected="false">${filePath}</a></li>
+            <li class="nav-item"><a id="tab_${treeId}" class="nav-link" data-toggle="tab" href="#pane_${treeId}" role="tab" aria-controls="pane_${treeId}" aria-selected="false">${filePath}</a></li>
             `
         );
         $("#editorPane").append(
             `
-            <div id="pane_${treeId} class="tab-pane" role="tabpanel" aria-labelledby="tab_${treeId}">
-                <textarea id="editor_${treeId}"></textarea>
+            <div id="pane_${treeId}" class="tab-pane" role="tabpanel" aria-labelledby="tab_${treeId}">
+                <textarea id="editor_${treeId}">${fileContent}</textarea>
             </div>
             `
         )
+        $(`#tab_${treeId}`).click();
+    }
+    setCurrentFile(filePath);
+    if (!(filePath in openedFiles)) {
+        openedFiles[filePath] = {
+            editor: CodeMirror.fromTextArea(document.getElementById(`editor_${treeId}`), {
+                lineNumbers: true
+            })
+        };
     }
 };
 
@@ -157,6 +167,7 @@ export const renameNewFile = (json_data) => {
  * Сохраняет содержимое файла.
  */
 export const saveFile = () => {
+    const currentFile = getCurrentFile();
     editorSocket.send(JSON.stringify({
         type: FILE_SAVE,
         project: project.id,

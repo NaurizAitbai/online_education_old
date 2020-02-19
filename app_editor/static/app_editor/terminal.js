@@ -1,9 +1,7 @@
-import { Terminal } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import { AttachAddon } from "xterm-addon-attach";
+import { getRunCommand } from "./editor.js";
 
-const terminal = new Terminal();
-const fitAddon = new FitAddon();
+export const terminal = new Terminal();
+const fitAddon = new FitAddon.FitAddon();
 
 let terminalSocket = null;
 let terminalUrl = null;
@@ -11,7 +9,7 @@ let attachAddon = null;
 let firstRunCommand = false;
 let firstReconnect = true;
 
-terminal.open(document.getElementById("terminal_app"))
+terminal.open(document.getElementById("terminalApp"))
 terminal.loadAddon(fitAddon);
 
 window.onresize = event => {
@@ -19,18 +17,21 @@ window.onresize = event => {
 }
 
 const showTerminalMessage = message => {
-    $("#terminal_message").text(message);
+    $("#terminalMessage").text(message);
 }
 
 const hideTerminalMessage = () => {
-    $("#terminal_message").text("");
+    $("#terminalMessage").text("");
 }
 
 const terminalSocketOpen = e => {
     firstReconnect = true;
     hideTerminalMessage();
-    attachAddon = new AttachAddon(terminalSocket);
+    attachAddon = new AttachAddon.AttachAddon(terminalSocket);
     terminal.loadAddon(attachAddon);
+
+    const runCommand = getRunCommand();
+
     if(!firstRunCommand) {
         terminal.paste("\n");
         if(runCommand) {
@@ -62,7 +63,7 @@ const terminalReconnect = () => {
     terminalSocket.onclose = terminalSocketClose;
 };
 
-const attach_terminal = json_data => {
+export const attachTerminal = json_data => {
     terminalUrl = `ws://${json_data["terminal_address"]}?logs=0&stream=1&stdin=1&stdout=1&stderr=1`;
     terminalSocketWait();
 }

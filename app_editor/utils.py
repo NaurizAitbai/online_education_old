@@ -109,35 +109,35 @@ def run_container(client, project):
         run_file = None
     elif project_type == 'reactjs_web':
         container = client.containers.run('reactjs_web', command='/bin/sh', detach=True, stdin_open=True, tty=True,
-                        volumes={
+                        volumes=[
                             '{}:/app'.format(project.project_folder),
                             '/app/node_modules'
-                        })
+                        ])
         port = 3000
         run_command = 'cd /app && npm start'
         run_file = None
     elif project_type == 'simple_python':
         container = client.containers.run('simple_python', command='/bin/bash', detach=True, stdin_open=True, tty=True,
-                        volumes={
+                        volumes=[
                             '{}:/app'.format(project.project_folder)
-                        })
+                        ])
         port = 80
         run_command = None
         run_file = 'cd /app && python3 :FILE_NAME:'
     elif project_type == 'django_python':
         container = client.containers.run('django_python', command='/bin/bash', detach=True, stdin_open=True, tty=True,
-                        volumes={
+                        volumes=[
                             '{}:/app'.format(project.project_folder)
-                        }
+                        ])
         port = 8000
         run_command = 'cd /app && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
         run_file = None
     elif project_type == 'pygame_python':
         container = client.containers.run('pygame_python', entrypoint='/bin/bash', detach=True, stdin_open=True, tty=True,
-                        volumes={
+                        volumes=[
                             '{}:/app'.format(project.project_folder),
                             '/dev/shm:/dev/shm'
-                        })
+                        ])
         port = None
         run_command = 'nohup /startup.sh &'
         run_file = 'cd /app && python3 :FILE_NAME:'
@@ -167,7 +167,7 @@ def run_server(project_id):
     docker_port = settings.DOCKER_PORT
 
     client = docker.DockerClient(
-        base_url='tcp://{}:{}'.format(docker_host, docker_port))
+        base_url='tcp://{}:{}'.format(docker_host, docker_port)
     )
 
     container, port, run_command, run_file = run_container(client, project)
@@ -218,47 +218,47 @@ def run_server(project_id):
     return container, "{}.{}".format(project.project_identifier, settings.DOCKER_BASE_DOMAIN), "{}.{}/{}".format(project.project_identifier, settings.DOCKER_BASE_DOMAIN, container_id), run_command, run_file
 
 
-    def get_file_content(project_id, file_path):
-        project =  Project.objects.get(id=project_id)
+def get_file_content(project_id, file_path):
+    project =  Project.objects.get(id=project_id)
 
-        file_fullpath = os.path.join(project.project_folder, file_path)
+    file_fullpath = os.path.join(project.project_folder, file_path)
 
-        fd = open(file_fullpath, 'r')
-        file_content = fd.read()
-        fd.close()
+    fd = open(file_fullpath, 'r')
+    file_content = fd.read()
+    fd.close()
 
-        return file_content
-    
+    return file_content
 
-    def set_file_content(project_id, filename, content):
-        project = Project.objects.get(id=project_id)
 
-        file_path = os.path.join(project.project_folder, filename)
+def set_file_content(project_id, filename, content):
+    project = Project.objects.get(id=project_id)
 
-        fd = open(file_path, 'w')
-        fd.write(content)
-        fd.close()
-    
+    file_path = os.path.join(project.project_folder, filename)
 
-    def create_file(project_id, filename, parent_path):
-        project = Project.objects.get(id=project_id)
+    fd = open(file_path, 'w')
+    fd.write(content)
+    fd.close()
 
-        file_path = os.path.join(project.project_folder, parent_path, filename)
 
-        open(file_path, 'a').close()
+def create_file(project_id, filename, parent_path):
+    project = Project.objects.get(id=project_id)
 
-        inode = os.stat(file_path).st_ino
+    file_path = os.path.join(project.project_folder, parent_path, filename)
 
-        return inode
-    
+    open(file_path, 'a').close()
 
-    def create_folder(project_id, filename, parent_path):
-        project = Project.objects.get(id=project_id)
+    inode = os.stat(file_path).st_ino
 
-        file_path = os.path.join(project.project_folder, parent_path, filename)
+    return inode
 
-        os.mkdir(file_path)
 
-        inode = os.stat(file_path).st_ino
+def create_folder(project_id, filename, parent_path):
+    project = Project.objects.get(id=project_id)
 
-        return inode
+    file_path = os.path.join(project.project_folder, parent_path, filename)
+
+    os.mkdir(file_path)
+
+    inode = os.stat(file_path).st_ino
+
+    return inode

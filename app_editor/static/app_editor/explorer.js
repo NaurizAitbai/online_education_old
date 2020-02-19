@@ -1,6 +1,7 @@
 import { createFile, createFolder } from './actions.js';
 import { FILE, FILE_OPEN } from './consts.js';
 import { editorSocket } from './websocket.js';
+import { openedFiles } from './editor.js';
 
 
 export const initExplorer = () => {
@@ -19,8 +20,8 @@ export const initExplorer = () => {
             }
         },
         sort: function(a, b) {
-            a_node = this.get_node(a);
-            b_node = this.get_node(b);
+            const a_node = this.get_node(a);
+            const b_node = this.get_node(b);
             if (a_node.type == b_node.type) {
                 return a_node.text > b_node.text ? 1 : -1;
             } else {
@@ -46,15 +47,15 @@ export const initExplorer = () => {
             }
         },
         plugins: ["types", "contextmenu", "dnd", "sort", "state", "unique"]
-    })
-        .on("selected_node.jstree", (e, data) => {
-            const treeId = data.node.id;
-            const type = data.node.type;
+    }).on("select_node.jstree", (e, data) => {
+        const treeId = data.node.id;
+        const type = data.node.type;
 
-            if (type == FILE) {
-                const filePath = data.node.li_attr["data-path"];
-            }
-        })
+        if (type == FILE) {
+            const filePath = data.node.li_attr["data-path"];
+            explorerOpenFile(treeId, filePath);
+        }
+    })
 }
 
 /**
@@ -68,7 +69,7 @@ export const explorerUpdate = json_data => {
     $("#explorer").jstree(true).refresh();
 };
 
-export const explorerOpenFile(treeId, filePath) {
+export const explorerOpenFile = (treeId, filePath) => {
     if(filePath in openedFiles) {
     } else {
         editorSocket.send(JSON.stringify({

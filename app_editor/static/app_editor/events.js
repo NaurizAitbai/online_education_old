@@ -1,3 +1,7 @@
+import { SUCCESS } from './consts.js';
+import { setRunCommand, setRunFileCommand } from './editor.js';
+
+
 /**
  * Обновляет состояние интерфейса, если сервер успешно запущен
  * @param {string} json_data Данные полученные с WebSocket
@@ -9,7 +13,7 @@ export const serverRunUpdate = (json_data) => {
         const address = json_data["address"];
         $("#runButton").attr('disabled', 'disabled');
         $("#serverAddressLabel").html(`<a href="http://${address}">${address}</a>`);
-        runCommand = json_data["run_command"];
-        runFileCommand = json_data["run_file"];
+        setRunCommand(json_data['run_command']);
+        setRunFileCommand(json_data['run_file']);
     }
 };
